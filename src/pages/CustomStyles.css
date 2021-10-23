@@ -1,0 +1,42 @@
+.home-backgroundimage {
+  background-image: url("../assets/home.jpg") !important;
+  height: 100vh !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+.home-card {
+  border-radius: 45px !important;
+  background-color: rgba(00, 00, 00, 0.2) !important;
+  height: fit-content !important;
+  color: white !important;
+}
+
+.home-button {
+  background-color: #1308fe !important;
+  color: white !important;
+}
+
+.flightsearch-backgroundimage {
+  background-image: url("../assets//eticket.jpg") !important;
+  height: 50vh !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+.flightsearch-backgroundcolor {
+  background-color: #f1f3f2 !important;
+  height: 50vh !important;
+}
+
+.booking-backgroundimage {
+  background-image: url("../assets//booking1.jpg") !important;
+  height: 100vh !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+.booking-backgroundcolor {
+  background-color: #f1f3f2 !important;
+  height: 100vh !important;
+}
