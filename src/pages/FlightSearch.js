@@ -137,21 +137,59 @@ function FlightSearch() {
         <div class="w-100"></div>
         No available offers. Try changing date.
       </div>
-      <div className="row justify-content-center">
+      <div
+        className="row justify-content-center"
+        style={{
+          display: dataAva === "NoData" || "start" ? "none" : "",
+        }}
+      >
         {FlightList.map((flight) => (
-          <div class="card text-center">
-            <div class="card-header">{flight.airline}</div>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <a href="/booking" class="btn btn-primary">
-                Book Now
-              </a>
+          <div className="row justify-content-center mb-3">
+            <div class="card col-5  border-primary text-dark  p-0">
+              <div
+                class="card-header text-center"
+                style={{ fontSize: "25px", fontFamily: "revert" }}
+              >
+                {flight.airline}
+              </div>
+              <div class="card-body row">
+                <div className="col-6 text-center">
+                  <h4 class="card-title">{flight.price}</h4>
+                  <p class="card-text" style={{ fontSize: "18px" }}>
+                    Flying Duration : {flight.duration}
+                    <br />
+                    Standard Economy
+                  </p>
+                </div>
+                <div className="col-6 text-center">
+                  <div
+                    class="card col-8 offset-2 shadow rounded-5 border-0 "
+                    style={{ backgroundColor: "#f0f3f5", fontSize: "18px" }}
+                  >
+                    <div class="card-body">
+                      <i class="fas fa-plug"></i>
+                      <span style={{ paddingLeft: "10px" }}>
+                        Power & USB outlets
+                      </span>
+                      <br />
+                      <i class="fas fa-utensils"></i>
+                      <span style={{ paddingLeft: "10px" }}>Meal provided</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="row justify-content-center mt-3">
+                  <div className="col-auto">
+                    <a
+                      href="/booking"
+                      class="btn home-button"
+                      style={{ fontSize: "18px" }}
+                    >
+                      Book Now
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="card-footer text-muted">2 days ago</div>
           </div>
         ))}
       </div>

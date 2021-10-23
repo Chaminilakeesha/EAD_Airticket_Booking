@@ -70,9 +70,9 @@ function EditTicket() {
       </div>
       <div
         className="row justify-content-evenly"
-        /* style={{
+        style={{
           display: ticket === "NoData" || "start" ? "none" : "",
-        }} */
+        }}
       >
         <div className="col-6">
           <div className="input-group input-group-lg mb-3">
@@ -180,6 +180,8 @@ function EditTicket() {
               type="button"
               className="btn home-button"
               style={{ fontSize: "18px" }}
+              data-bs-toggle="modal"
+              data-bs-target="#editModal"
             >
               Update Reservation
             </button>
@@ -190,13 +192,96 @@ function EditTicket() {
               type="button"
               className="btn btn-danger"
               style={{ fontSize: "18px" }}
+              data-bs-toggle="modal"
+              data-bs-target="#cancelModal"
             >
               Cancel Reservation
             </button>
           </div>
         </div>
       </div>
-      {/* result showing */}
+      <div
+        class="modal fade"
+        id="cancelModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div
+              class="modal-header"
+              style={{
+                backgroundColor: "green",
+                color: "white",
+                fontSize: "25px",
+              }}
+            >
+              <h5
+                class="modal-title"
+                id="exampleModalLabel"
+                style={{ fontSize: "20px" }}
+              >
+                Operation success
+              </h5>
+            </div>
+            <div class="modal-body">
+              Your reservation is canceled successfully.
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                style={{ fontSize: "20px" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="editModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div
+              class="modal-header"
+              style={{
+                backgroundColor: "green",
+                color: "white",
+                fontSize: "25px",
+              }}
+            >
+              <h5
+                class="modal-title"
+                id="exampleModalLabel"
+                style={{ fontSize: "20px" }}
+              >
+                Operation success
+              </h5>
+            </div>
+            <div class="modal-body">
+              Your reservation is updated successfully.
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                style={{ fontSize: "20px" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
