@@ -17,7 +17,7 @@ function App() {
           <Route path="/editTicket" exact>
             <EditTicket />
           </Route>
-          <Route path="/Booking" exact>
+          <Route path="/Booking/:flightid/:date" exact>
             <Booking />
           </Route>
           <Route path="/" exact>

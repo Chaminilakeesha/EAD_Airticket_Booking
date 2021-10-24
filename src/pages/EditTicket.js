@@ -1,8 +1,73 @@
 import React, { useState } from "react";
 import "./CustomStyles.css";
+import axios from "axios";
 
 function EditTicket() {
   const [ticket, setTicket] = useState("start");
+  const [ticketId, setTicketId] = useState("");
+  const [update, setUpdate] = useState(false);
+  const [cancel, setCancel] = useState(false);
+  const [ticketDetails, setTicketDetails] = useState({
+    id: ticketId,
+    passportId: "",
+    dob: "",
+    phoneNumber: "",
+    email: "",
+    customerId: "",
+    date: "",
+    destination: "",
+    departure: "",
+    name: "",
+  });
+
+  const handleChange = (e) => {
+    setTicketDetails((cur) => ({
+      ...cur,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const getTicketDetails = () => {
+    axios
+      .get("/ticket/find/" + ticketId)
+      .then((response) => {
+        setTicketDetails(response.data);
+
+        setTicket("Ok");
+      })
+      .catch((error) => {
+        setTicket("NoData");
+      });
+  };
+
+  const updateTicket = () => {
+    const { name, phoneNumber, email } = ticketDetails;
+
+    if (name !== "" && phoneNumber !== "" && email !== "") {
+      axios
+        .put("/ticket/update/" + ticketId, { name, phoneNumber, email })
+        .then((res) => {
+          setUpdate(true);
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    } else {
+      alert("Insert missing details");
+    }
+  };
+
+  const cancelTicket = () => {
+    axios
+      .delete("/ticket/delete/" + ticketId)
+
+      .then((res) => {
+        setCancel(true);
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
 
   return (
     <div className="container-fluid ">
@@ -22,8 +87,10 @@ function EditTicket() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="ticketId"
                 placeholder="Ticket Number"
+                value={ticketId}
+                onChange={(e) => setTicketId(e.target.value)}
               />
             </div>
           </div>
@@ -34,6 +101,7 @@ function EditTicket() {
                 type="button"
                 className="btn btn-lg home-button mb-3 mt-4"
                 style={{ fontSize: "18px" }}
+                onClick={getTicketDetails}
               >
                 Search
               </button>
@@ -69,9 +137,9 @@ function EditTicket() {
         No available reservations.Please, recheck the details.
       </div>
       <div
-        className="row justify-content-evenly"
+        className="row justify-content-evenly mt-5"
         style={{
-          display: ticket === "NoData" || "start" ? "none" : "",
+          display: ticket === "Ok" ? "" : "none",
         }}
       >
         <div className="col-6">
@@ -81,7 +149,8 @@ function EditTicket() {
             </label>
             <input
               className="form-control"
-              id="exampleDataList"
+              id="passportId"
+              value={ticketDetails.passportId}
               placeholder="Passport Number"
               readOnly
             />
@@ -96,7 +165,8 @@ function EditTicket() {
             <input
               className="form-control"
               list="datalistOptions"
-              id="exampleDataList"
+              id="departure"
+              value={ticketDetails.departure}
               readOnly
               placeholder="From?"
             />
@@ -111,7 +181,8 @@ function EditTicket() {
             <input
               className="form-control"
               list="datalistOptions"
-              id="exampleDataList"
+              id="destination"
+              value={ticketDetails.destination}
               readOnly
               placeholder="To?"
             />
@@ -126,10 +197,11 @@ function EditTicket() {
             <input
               type="text"
               class="form-control"
-              aria-label="Sizing example input"
               aria-describedby="inputGroup-sizing-lg"
               readOnly
               placeholder="Date (Ex: 2021-07-08)"
+              id="date"
+              value={ticketDetails.date}
             />
           </div>
         </div>
@@ -142,7 +214,9 @@ function EditTicket() {
             </label>
             <input
               className="form-control"
-              id="exampleDataList"
+              id="name"
+              value={ticketDetails.name}
+              onChange={handleChange}
               placeholder="Name"
             />
           </div>
@@ -155,7 +229,9 @@ function EditTicket() {
             </label>
             <input
               className="form-control"
-              id="exampleDataList"
+              id="phoneNumber"
+              value={ticketDetails.phoneNumber}
+              onChange={handleChange}
               placeholder="Telephone Number"
             />
           </div>
@@ -168,7 +244,9 @@ function EditTicket() {
             </label>
             <input
               className="form-control"
-              id="exampleDataList"
+              id="email"
+              value={ticketDetails.email}
+              onChange={handleChange}
               placeholder="E-mail"
             />
           </div>
@@ -182,6 +260,7 @@ function EditTicket() {
               style={{ fontSize: "18px" }}
               data-bs-toggle="modal"
               data-bs-target="#editModal"
+              onClick={updateTicket}
             >
               Update Reservation
             </button>
@@ -194,94 +273,99 @@ function EditTicket() {
               style={{ fontSize: "18px" }}
               data-bs-toggle="modal"
               data-bs-target="#cancelModal"
+              onClick={cancelTicket}
             >
               Cancel Reservation
             </button>
           </div>
         </div>
       </div>
-      <div
-        class="modal fade"
-        id="cancelModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div
-              class="modal-header"
-              style={{
-                backgroundColor: "green",
-                color: "white",
-                fontSize: "25px",
-              }}
-            >
-              <h5
-                class="modal-title"
-                id="exampleModalLabel"
-                style={{ fontSize: "20px" }}
+      {cancel && (
+        <div
+          class="modal fade"
+          id="cancelModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div
+                class="modal-header"
+                style={{
+                  backgroundColor: "green",
+                  color: "white",
+                  fontSize: "25px",
+                }}
               >
-                Operation success
-              </h5>
-            </div>
-            <div class="modal-body">
-              Your reservation is canceled successfully.
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                style={{ fontSize: "20px" }}
-              >
-                Close
-              </button>
+                <h5
+                  class="modal-title"
+                  id="exampleModalLabel"
+                  style={{ fontSize: "20px" }}
+                >
+                  Operation success
+                </h5>
+              </div>
+              <div class="modal-body">
+                Your reservation is canceled successfully.
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  style={{ fontSize: "20px" }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="modal fade"
-        id="editModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div
-              class="modal-header"
-              style={{
-                backgroundColor: "green",
-                color: "white",
-                fontSize: "25px",
-              }}
-            >
-              <h5
-                class="modal-title"
-                id="exampleModalLabel"
-                style={{ fontSize: "20px" }}
+      )}
+      {update && (
+        <div
+          class="modal fade"
+          id="editModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div
+                class="modal-header"
+                style={{
+                  backgroundColor: "green",
+                  color: "white",
+                  fontSize: "25px",
+                }}
               >
-                Operation success
-              </h5>
-            </div>
-            <div class="modal-body">
-              Your reservation is updated successfully.
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                style={{ fontSize: "20px" }}
-              >
-                Close
-              </button>
+                <h5
+                  class="modal-title"
+                  id="exampleModalLabel"
+                  style={{ fontSize: "20px" }}
+                >
+                  Operation success
+                </h5>
+              </div>
+              <div class="modal-body">
+                Your reservation is updated successfully.
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  style={{ fontSize: "20px" }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

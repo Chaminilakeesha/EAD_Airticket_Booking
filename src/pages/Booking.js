@@ -1,7 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CustomStyles.css";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function Booking() {
+  const { flightid, date } = useParams();
+  const [customerDetails, setCustomerDetails] = useState({
+    passportId: "",
+    name: "",
+    dob: "",
+    phoneNumber: "",
+    email: "",
+    flightId: flightid,
+    date: date,
+  });
+  const [ticketId, setTicketId] = useState("");
+
+  const save = () => {
+    const { name, passportId, dob, email, phoneNumber } = customerDetails;
+    console.log(name);
+    if (
+      name !== "" &&
+      passportId !== "" &&
+      dob !== "" &&
+      phoneNumber !== "" &&
+      email !== ""
+    ) {
+      axios
+        .post("/ticket/add", customerDetails)
+        .then((res) => {
+          setTicketId(res.data.ticketNumber);
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    } else {
+      alert("Insert missing details");
+    }
+  };
+
+  const handleChange = (e) => {
+    setCustomerDetails((cur) => ({
+      ...cur,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -20,7 +64,9 @@ function Booking() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="name"
+                value={customerDetails.name}
+                onChange={handleChange}
                 placeholder="Name"
               />
             </div>
@@ -32,7 +78,9 @@ function Booking() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="passportId"
+                value={customerDetails.passportId}
+                onChange={handleChange}
                 placeholder="Passport Number"
               />
             </div>
@@ -44,7 +92,9 @@ function Booking() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="dob"
+                value={customerDetails.dob}
+                onChange={handleChange}
                 placeholder="Date Of Birth"
               />
             </div>
@@ -63,7 +113,9 @@ function Booking() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="phoneNumber"
+                value={customerDetails.phoneNumber}
+                onChange={handleChange}
                 placeholder="Telephone Number"
               />
             </div>
@@ -75,7 +127,9 @@ function Booking() {
               </label>
               <input
                 className="form-control"
-                id="exampleDataList"
+                id="email"
+                value={customerDetails.email}
+                onChange={handleChange}
                 placeholder="E-mail"
               />
             </div>
@@ -88,6 +142,7 @@ function Booking() {
                 data-bs-toggle="modal"
                 data-bs-target="#exampleModal"
                 style={{ fontSize: "18px" }}
+                onClick={save}
               >
                 Make Reservation
               </button>
@@ -120,7 +175,8 @@ function Booking() {
               Dear customer,
               <br />
               <br />
-              You have made a reservation on ticket nuumber <b>T000001</b>
+              You have made a reservation on ticket nuumber <b>{ticketId}</b>
+              {}
               successfully.
               <br /> Please use above ticker number to make changes on your
               reservation.

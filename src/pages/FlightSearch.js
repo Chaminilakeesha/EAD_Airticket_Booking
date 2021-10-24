@@ -1,41 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CustomStyles.css";
-
-const CountryList = [
-  { name: "Australia", id: "C0000001" },
-  { name: "USA", id: "C0000002" },
-  { name: "UK", id: "C0000003" },
-];
-
-const FlightList = [
-  {
-    id: "F0000001",
-    airline: "SL Airline",
-    price: "Rs.30000",
-    duration: "9 hours",
-  },
-  {
-    id: "F0000002",
-    airline: "SL Airline",
-    price: "Rs.30000",
-    duration: "9 hours",
-  },
-  {
-    id: "F0000003",
-    airline: "SL Airline",
-    price: "Rs.30000",
-    duration: "9 hours",
-  },
-  {
-    id: "F0000004",
-    airline: "SL Airline",
-    price: "Rs.30000",
-    duration: "9 hours",
-  },
-];
+import axios from "axios";
 
 function FlightSearch() {
   const [dataAva, setDataAva] = useState("start");
+  const [destinationList, setDestinationList] = useState([]);
+  const [departureList, setDepartureList] = useState([]);
+  const [flightList, setFlightList] = useState([]);
+  const [date, setdate] = useState("");
+  const [journey, setJourney] = useState({
+    day: "",
+    destination: "",
+    departure: "",
+  });
+
+  const getDestinationList = () => {
+    axios
+      .get("/flight/find/depsanddes")
+      .then((response) => {
+        setDestinationList(response.data.destinations);
+        setDepartureList(response.data.departures);
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  const getFlightList = (day) => {
+    console.log(journey);
+    axios
+      .post("/flight/find", { ...journey, day: day })
+      .then((response) => {
+        console.log(response.data);
+        setFlightList(() => [...response.data]);
+        if (response.data.length !== 0) {
+          setDataAva("Ok");
+        } else {
+          setDataAva("NoData");
+        }
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+  useEffect(() => {
+    getDestinationList();
+  }, []);
+
+  const handleChange = (e) => {
+    setJourney((cur) => ({
+      ...cur,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const search = () => {
+    const { destination, departure } = journey;
+    if (destination !== "" && departure !== "" && date !== "") {
+      var days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      var d = new Date(date);
+      var dayName = days[d.getDay()];
+      getFlightList(dayName);
+    }
+  };
 
   return (
     <div className="container-fluid ">
@@ -55,13 +90,15 @@ function FlightSearch() {
               </label>
               <input
                 className="form-control"
-                list="datalistOptions"
-                id="exampleDataList"
+                list="datalistOptions1"
+                id="departure"
                 placeholder="From?"
+                value={journey.departure}
+                onChange={handleChange}
               />
-              <datalist id="datalistOptions">
-                {CountryList.map((country) => (
-                  <option value={country.name} />
+              <datalist id="datalistOptions1">
+                {departureList.map((country) => (
+                  <option value={country} />
                 ))}
               </datalist>
             </div>
@@ -74,12 +111,14 @@ function FlightSearch() {
               <input
                 className="form-control"
                 list="datalistOptions"
-                id="exampleDataList"
+                id="destination"
                 placeholder="To?"
+                value={journey.destination}
+                onChange={handleChange}
               />
               <datalist id="datalistOptions">
-                {CountryList.map((country) => (
-                  <option value={country.name} />
+                {destinationList.map((country) => (
+                  <option value={country} />
                 ))}
               </datalist>
             </div>
@@ -92,9 +131,11 @@ function FlightSearch() {
               <input
                 type="text"
                 class="form-control"
-                aria-label="Sizing example input"
+                id="date"
                 aria-describedby="inputGroup-sizing-lg"
                 placeholder="Date (Ex: 2021-07-08)"
+                value={date}
+                onChange={(e) => setdate(e.target.value)}
               />
             </div>
           </div>
@@ -104,6 +145,7 @@ function FlightSearch() {
                 type="button"
                 className="btn btn-lg home-button mb-3 mt-4"
                 style={{ fontSize: "18px" }}
+                onClick={search}
               >
                 Search
               </button>
@@ -138,25 +180,25 @@ function FlightSearch() {
         No available offers. Try changing date.
       </div>
       <div
-        className="row justify-content-center"
+        className="row justify-content-center mt-5"
         style={{
-          display: dataAva === "NoData" || "start" ? "none" : "",
+          display: dataAva === "Ok" ? "" : "none",
         }}
       >
-        {FlightList.map((flight) => (
+        {flightList.map((flight) => (
           <div className="row justify-content-center mb-3">
             <div class="card col-5  border-primary text-dark  p-0">
               <div
                 class="card-header text-center"
                 style={{ fontSize: "25px", fontFamily: "revert" }}
               >
-                {flight.airline}
+                {flight.airlineName}
               </div>
               <div class="card-body row">
                 <div className="col-6 text-center">
-                  <h4 class="card-title">{flight.price}</h4>
+                  <h4 class="card-title">Rs.{flight.price}.00</h4>
                   <p class="card-text" style={{ fontSize: "18px" }}>
-                    Flying Duration : {flight.duration}
+                    Flying Duration : {flight.duration} Hours
                     <br />
                     Standard Economy
                   </p>
@@ -180,7 +222,7 @@ function FlightSearch() {
                 <div className="row justify-content-center mt-3">
                   <div className="col-auto">
                     <a
-                      href="/booking"
+                      href={"/booking/" + flight.id + "/" + date}
                       class="btn home-button"
                       style={{ fontSize: "18px" }}
                     >
